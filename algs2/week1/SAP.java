@@ -219,16 +219,16 @@ public class SAP {
     private void validateVertex(Iterable<Integer> v) {
         if (v == null)
             throw new IllegalArgumentException("vertex set is null");
-        int count = 0;
+        // int count = 0;
         for (Integer u : v) {
             if (u == null)
                 throw new IllegalArgumentException("vertex is null");
             validateVertex(u);
-            ++count;
+            // ++count;
         }
 
-        if (count == 0)
-            throw new IllegalArgumentException("vertex set is empty");
+        // if (count == 0)
+        //    throw new IllegalArgumentException("vertex set is empty");
     }
 
     // do unit testing of this class
@@ -247,7 +247,7 @@ public class SAP {
         v.add(36135);
         v.add(60987);
         ArrayList<Integer> w = new ArrayList<Integer>();
-        w.add(7107);
+        //w.add(7107);
         StdOut.printf("length = %d\n", sap.length(v, w));
     }
 }
