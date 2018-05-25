@@ -114,7 +114,7 @@ public class SAP {
                         pathLength = distTo[v] + distTo[u] +1;
                     }
                 }
-                if (distTo[u] +1 < distTo[v]) {
+                if (distTo[u] +1 <= distTo[v]) {
                     distTo[v] = distTo[u] +1;
                     q.enqueue(v);
                     root[v] = src;
