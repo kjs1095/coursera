@@ -8,6 +8,7 @@ public class SAP {
     private static final int INFINITY = Integer.MAX_VALUE;
     private final Digraph G;
     private int[] distTo;
+    private int[] root;
     private int cachedPoint1;
     private int cachedPoint2;
     private int pathLength;
@@ -17,8 +18,10 @@ public class SAP {
     public SAP(Digraph G) {
         if (G == null) 
             throw new java.lang.IllegalArgumentException("Directed graph is null");
+
         this.G = new Digraph(G);
         distTo = new int[this.G.V()];
+        root = new int[this.G.V()];
         cachedPoint1 = -1;
         cachedPoint2 = -1;
         pathLength = INFINITY;
@@ -61,8 +64,11 @@ public class SAP {
         if (cachedPoint1 != v || cachedPoint2 != w) {
             for (int u = 0; u < G.V(); ++u)
                 distTo[u] = INFINITY;
+            for (int u = 0; u < G.V(); ++u)
+                root[u] = -1;
+
             commonAncestor = -1;
-            pathLength = INFINITY;
+            pathLength = -1;
             cachedPoint1 = v;
             cachedPoint2 = w;
 
@@ -74,6 +80,8 @@ public class SAP {
     private void bfs1(Digraph G, int src) {
         Queue<Integer> q = new Queue<Integer>();
         distTo[src] = 0;
+        root[src] = src;
+
         q.enqueue(src);
         while (!q.isEmpty()) {
             int u = q.dequeue();
@@ -81,6 +89,7 @@ public class SAP {
                 if (distTo[u] + 1 < distTo[v]) {
                     distTo[v] = distTo[u] +1;
                     q.enqueue(v);
+                    root[v] = src;
                 }
             }
         }
@@ -91,21 +100,25 @@ public class SAP {
         if (distTo[src] != INFINITY) {
             commonAncestor = src;
             pathLength = distTo[src];
-            return;
         }
 
         distTo[src] = 0;
+        root[src] = src;
         q.enqueue(src);
         while (!q.isEmpty()) {
             int u = q.dequeue();
             for (int v : G.adj(u)) {
-                if (distTo[v] != INFINITY) {
-                    commonAncestor = v;
-                    pathLength = distTo[v] + distTo[u] +1;
-                    return;
+                if (distTo[v] != INFINITY && root[v] != src) {
+                    if (pathLength == -1 || distTo[v] + distTo[u] +1 < pathLength) {
+                        commonAncestor = v;
+                        pathLength = distTo[v] + distTo[u] +1;
+                    }
                 }
-                distTo[v] = distTo[u] +1;
-                q.enqueue(v);
+                if (distTo[u] +1 < distTo[v]) {
+                    distTo[v] = distTo[u] +1;
+                    q.enqueue(v);
+                    root[v] = src;
+                }
             }
         }
     }
@@ -134,7 +147,7 @@ public class SAP {
         for (int u = 0; u < G.V(); ++u)
             distTo[u] = INFINITY;
         commonAncestor = -1;
-        pathLength = INFINITY;
+        pathLength = -1;
         cachedPoint1 = -1;
         cachedPoint2 = -1;
         bfs1(G, v);
@@ -163,7 +176,7 @@ public class SAP {
         Queue<Integer> q = new Queue<Integer>();
         for (int s : sources) {
             if (distTo[s] != INFINITY) {
-                if (distTo[s] < pathLength) {
+                if (pathLength == -1 || distTo[s] < pathLength) {
                     pathLength = distTo[s];
                     commonAncestor = s;
                 }
@@ -177,7 +190,7 @@ public class SAP {
             int u = q.dequeue();
             for (int v : G.adj(u)) {
                 if (distTo[v] != INFINITY) {
-                    if (distTo[v] + distTo[u] + 1 < pathLength) {
+                    if (pathLength == -1 || distTo[v] + distTo[u] + 1 < pathLength) {
                         pathLength = distTo[v] + distTo[u] +1;
                         commonAncestor = v;
                     }
