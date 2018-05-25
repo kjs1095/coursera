@@ -2,25 +2,18 @@ import java.awt.Color;
 import edu.princeton.cs.algs4.Picture;
 import edu.princeton.cs.algs4.StdOut;
 public class SeamCarver {
-    private double[][] cachedEnergy;
     private int[][] rgb;
     private Picture picture;
 
-    // create a seam carver object based on the given picture
     public SeamCarver(Picture picture) {
         if (picture == null)
             throw new java.lang.IllegalArgumentException("picture is null");
-        this.picture = new Picture(picture);
+        this.picture = picture;
 
         boolean transpose = false;
         int h = height(transpose);
         int w = width(transpose);
-        cachedEnergy = new double[h][w];
         rgb = new int[h][w];
-
-        for (int i = 0; i < h; ++i)
-            for (int j = 0; j < w; ++j)
-                cachedEnergy[i][j] = computeEnergy(j, i);
 
         for (int i = 0; i < h; ++i)
             for (int j = 0; j < w; ++j)
@@ -62,7 +55,7 @@ public class SeamCarver {
     public double energy(int x, int y) {
         if (x < 0 || y < 0 || x >= width() || y >= height())
             throw new java.lang.IllegalArgumentException("out of bound");
-        return cachedEnergy[y][x];
+        return computeEnergy(x, y);
     }
 
     private double computeEnergy(int x, int y) {
@@ -113,11 +106,17 @@ public class SeamCarver {
         for (int i = h -2; i >= 0; --i) {
             for (int j = 0; j < w; ++j) {
                 accu[i][j] = Double.POSITIVE_INFINITY;
+
+                double cached;
+                if (transpose)
+                    cached = computeEnergy(i, j);
+                else
+                    cached = computeEnergy(j, i);
                 for (int k = j -1; k <= j +1; ++k) {
                     if (k < 0 || k >= w)  continue;
 
-                    if (accu[i +1][k] + cachedEnergy[i][j] < accu[i][j]) {
-                        accu[i][j] = accu[i +1][k] + cachedEnergy[i][j];
+                    if (accu[i +1][k] + cached < accu[i][j]) {
+                        accu[i][j] = accu[i +1][k] + cached;
                         from[i][j] = k;
                     }
                 }
@@ -164,7 +163,6 @@ public class SeamCarver {
         transposeImage(true, true);
 
         initPicture(height() -1, width());
-        updateEnergy(seam, transpose);
     }
 
     // remove vertical seam from current picture
@@ -190,7 +188,6 @@ public class SeamCarver {
         removeSeam(seam, transpose);
 
         initPicture(height(), width() -1);
-        updateEnergy(seam, transpose);
     }
 
     private void removeSeam(int[] seam, boolean transpose) {
@@ -214,16 +211,13 @@ public class SeamCarver {
         if (transposed && removed)
             --w;
         int[][] rgbT = new int[w][h];
-        double[][] cachedEnergyT = new double[w][h];
 
         for (int i = 0; i < h; ++i)
             for (int j = 0; j < w; ++j) {
                 rgbT[j][i] = rgb[i][j];
-                cachedEnergyT[j][i] = cachedEnergy[i][j];
             }
 
         rgb = rgbT;
-        cachedEnergy = cachedEnergyT;
     }
 
     private void initPicture(int h, int w) {
@@ -236,21 +230,4 @@ public class SeamCarver {
         picture = nextPicture;
     }
 
-    private void updateEnergy(int[] seam, boolean transpose) {
-        if (transpose) {
-            for (int i = 0; i < width(); ++i) {
-                if (seam[i] -1 >= 0)
-                    cachedEnergy[seam[i] -1][i] = energy(i, seam[i] -1);
-                if (seam[i] < height())
-                    cachedEnergy[seam[i]][i] = energy(i, seam[i]);
-            }
-        } else {
-            for (int i = 0; i < height(); ++i) {
-                if (seam[i] -1 >= 0)
-                    cachedEnergy[i][seam[i] -1] = computeEnergy(seam[i] -1, i);
-                if (seam[i] < width())
-                    cachedEnergy[i][seam[i]] = computeEnergy(seam[i], i);
-            }
-        }
-    }
 }
