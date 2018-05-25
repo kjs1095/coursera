@@ -3,7 +3,7 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.Digraph;
-
+import java.util.ArrayList;
 public class SAP {
     private static final int INFINITY = Integer.MAX_VALUE;
     private final Digraph G;
@@ -114,7 +114,7 @@ public class SAP {
                         pathLength = distTo[v] + distTo[u] +1;
                     }
                 }
-                if (distTo[u] +1 <= distTo[v]) {
+                if (root[v] != src || distTo[u] +1 < distTo[v]) {
                     distTo[v] = distTo[u] +1;
                     q.enqueue(v);
                     root[v] = src;
@@ -146,6 +146,8 @@ public class SAP {
     private void computeSAP(Iterable<Integer> v, Iterable<Integer> w) {
         for (int u = 0; u < G.V(); ++u)
             distTo[u] = INFINITY;
+        for (int u = 0; u < G.V(); ++u)
+            root[u] = -1;
         commonAncestor = -1;
         pathLength = -1;
         cachedPoint1 = -1;
@@ -159,6 +161,7 @@ public class SAP {
         for (int s : sources) {
             distTo[s] = 0;
             q.enqueue(s);
+            root[s] = 1;
         }
 
         while (!q.isEmpty()) {
@@ -167,6 +170,7 @@ public class SAP {
                 if (distTo[u] + 1 < distTo[v]) {
                     distTo[v] = distTo[u] +1;
                     q.enqueue(v);
+                    root[v] = 1;
                 }
             }
         }
@@ -180,24 +184,28 @@ public class SAP {
                     pathLength = distTo[s];
                     commonAncestor = s;
                 }
-            } else {
-                distTo[s] = 0;
-                q.enqueue(s);
-            }
+            } 
+
+            distTo[s] = 0;
+            q.enqueue(s);
+            root[s] = 2;
         }
 
         while (!q.isEmpty()) {
             int u = q.dequeue();
             for (int v : G.adj(u)) {
-                if (distTo[v] != INFINITY) {
+                if (distTo[v] != INFINITY && root[v] != 2) {
                     if (pathLength == -1 || distTo[v] + distTo[u] + 1 < pathLength) {
                         pathLength = distTo[v] + distTo[u] +1;
                         commonAncestor = v;
                     }
-                } else {
+                } 
+                if (root[v] != 2 || distTo[u] +1 < distTo[v]) {
                     distTo[v] = distTo[u] +1;
                     q.enqueue(v);
+                    root[v] = 2;
                 }
+
             }
         }
     }
@@ -228,12 +236,18 @@ public class SAP {
         In in = new In(args[0]);
         Digraph G = new Digraph(in);
         SAP sap = new SAP(G);
-        while (!StdIn.isEmpty()) {
-            int v = StdIn.readInt();
-            int w = StdIn.readInt();
-            int length = sap.length(v, w);
-            int ancestor = sap.ancestor(v, w);
-            StdOut.printf("length = %d, ancestor = %d\n", length, ancestor);
-        }
+        /*        while (!StdIn.isEmpty()) {
+                  int v = StdIn.readInt();
+                  int w = StdIn.readInt();
+                  int length = sap.length(v, w);
+                  int ancestor = sap.ancestor(v, w);
+                  StdOut.printf("length = %d, ancestor = %d\n", length, ancestor);
+                  }*/
+        ArrayList<Integer> v = new ArrayList<Integer>();
+        v.add(36135);
+        v.add(60987);
+        ArrayList<Integer> w = new ArrayList<Integer>();
+        w.add(7107);
+        StdOut.printf("length = %d\n", sap.length(v, w));
     }
 }
