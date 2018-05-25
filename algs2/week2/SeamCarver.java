@@ -1,6 +1,6 @@
 import java.awt.Color;
 import edu.princeton.cs.algs4.Picture;
-import edu.princeton.cs.algs4.StdOut;
+
 public class SeamCarver {
     private int[][] rgb;
     private Picture picture;
@@ -8,7 +8,7 @@ public class SeamCarver {
     public SeamCarver(Picture picture) {
         if (picture == null)
             throw new java.lang.IllegalArgumentException("picture is null");
-        this.picture = picture;
+        this.picture = new Picture(picture);
 
         boolean transpose = false;
         int h = height(transpose);
@@ -18,13 +18,11 @@ public class SeamCarver {
         for (int i = 0; i < h; ++i)
             for (int j = 0; j < w; ++j)
                 rgb[i][j] = this.picture.getRGB(j, i);
-
-
     }   
 
     // current picture
     public Picture picture() {
-        return picture;
+        return new Picture(picture);
     }
 
     // width of current picture
