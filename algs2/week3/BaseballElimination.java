@@ -102,21 +102,29 @@ public class BaseballElimination {
         buildGraph(x);
         flowAlgo = new FordFulkerson(flownetwork, 0, flownetwork.V() -1);
 
+        int curMax = 0;
+        for (int i = 0; i < n; ++i)
+            curMax = Math.max(curMax, w[i]);
+        
         int remainAgainst = 0;
         for (int i = 0; i < n; ++i)
             for (int j = i +1; j < n; ++j)
                 if (i != x && j != x)
                     remainAgainst += g[i][j];
     
-        return Math.abs(flowAlgo.value() - remainAgainst) > FLOATING_POINT_EPSILON;
+        return curMax > w[x] + r[x] 
+                || Math.abs(flowAlgo.value() - remainAgainst) > FLOATING_POINT_EPSILON;
     }
 
     public Iterable<String> certificateOfElimination(String team) {
         if (isEliminated(team)) {
             Set<String> set = new HashSet<String>();
+            int x = table.get(team);
             for (String teamname : table.keySet()) {
                 int teamNodeId = flownetwork.V() -1 - n + table.get(teamname);
                 if (flowAlgo.inCut(teamNodeId))
+                    set.add(teamname);
+                else if (w[table.get(teamname)] > w[x] + r[x])
                     set.add(teamname);
             }
             return new TeamIterable(set);
