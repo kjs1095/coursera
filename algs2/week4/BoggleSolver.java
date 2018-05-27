@@ -81,9 +81,14 @@ public class BoggleSolver {
             return;
         visit[x][y] = true;
         sb.append(ch);
-
-        if (ptr.get(ch).isWord() && scoreOf(sb.toString()) > 0)
-            res.add(sb.toString());
+        if (ch == 'Q') {
+            sb.append('U');
+            if (ptr.get(ch).get('U') != null && ptr.get(ch).get('U').isWord()
+                    && scoreOf(sb.toString()) > 0)
+                res.add(sb.toString());
+        } else
+            if (ptr.get(ch).isWord() && scoreOf(sb.toString()) > 0)
+                res.add(sb.toString());
 
         for (int i = -1; i <= 1; ++i)
             for (int j = -1; j <= 1; ++j) {
@@ -96,12 +101,13 @@ public class BoggleSolver {
                     continue;
 
                 if (ch == 'Q') {
-                    sb.append('U');
-                    dfs(ptr.get(ch).get('U'), nx, ny, sb);
-                    sb.deleteCharAt(sb.length() -1);
+                    if (ptr.get(ch).get('U') != null)
+                        dfs(ptr.get(ch).get('U'), nx, ny, sb);
                 } else 
                     dfs(ptr.get(ch), nx, ny, sb);
             }
+        if (ch == 'Q')
+            sb.deleteCharAt(sb.length() -1);
         sb.deleteCharAt(sb.length() -1);
         visit[x][y] = false;
     }
