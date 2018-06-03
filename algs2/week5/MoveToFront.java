@@ -27,8 +27,8 @@ public class MoveToFront {
             seq.addFirst(curChar);
 
             BinaryStdOut.write((char) (index & 0xff));
-            BinaryStdOut.flush();
         }
+        BinaryStdOut.flush();
         BinaryStdOut.close();
     }
 
@@ -42,11 +42,11 @@ public class MoveToFront {
             char curChar = seq.get((int) input);
           
             BinaryStdOut.write(curChar);
-            BinaryStdOut.flush();
 
             seq.remove((int) input);
             seq.addFirst(curChar);
         }
+        BinaryStdOut.flush();
         BinaryStdOut.close();
     }
 

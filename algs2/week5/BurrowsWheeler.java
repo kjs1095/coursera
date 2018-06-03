@@ -17,12 +17,10 @@ public class BurrowsWheeler {
                     first = i;
 
             BinaryStdOut.write(first);
-            BinaryStdOut.flush();
-            for (int i = 0; i < n; ++i) { 
+            for (int i = 0; i < n; ++i) 
                 BinaryStdOut.write(str.charAt((csa.index(i) + n -1) % n));
-                BinaryStdOut.flush();
-            }
-        }        
+        }
+        BinaryStdOut.flush(); 
         BinaryStdOut.close();
     }
 
@@ -58,8 +56,8 @@ public class BurrowsWheeler {
             }
             
             BinaryStdOut.write(arr[cur]);
-            BinaryStdOut.flush();
         }
+        BinaryStdOut.flush();
         BinaryStdOut.close();
     }
 
