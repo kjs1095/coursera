@@ -39,6 +39,9 @@ public class CircularSuffixArray {
     }
 
     public int index(int i) {                // returns index of ith sorted suffix
+        if (i < 0 || i >= length())
+            throw new java.lang.IllegalArgumentException("index out of bound");
+
         return index[i];
     }
 
