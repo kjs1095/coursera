@@ -15,12 +15,13 @@ public class BurrowsWheeler {
             for (int i = 0; i < n && first == -1; ++i)
                 if (csa.index(i) == 0)
                     first = i;
-            
+
             BinaryStdOut.write(first);
-            for (int i = 0; i < n; ++i) 
-                BinaryStdOut.write(str.charAt((csa.index(i) + n -1) % n));
-            
             BinaryStdOut.flush();
+            for (int i = 0; i < n; ++i) { 
+                BinaryStdOut.write(str.charAt((csa.index(i) + n -1) % n));
+                BinaryStdOut.flush();
+            }
         }        
         BinaryStdOut.close();
     }
@@ -31,7 +32,7 @@ public class BurrowsWheeler {
             int first = BinaryStdIn.readInt();
             String str = BinaryStdIn.readString();
             int n = str.length();
-     
+            
             ArrayList<ArrayList<Integer>> index = new ArrayList<ArrayList<Integer>>(); 
             for (int i = 0; i < 256; ++i)
                 index.add(new ArrayList<Integer>());
@@ -50,9 +51,10 @@ public class BurrowsWheeler {
                 }
 
             int cur = first;
-            while (next[cur] != first) {
+            while (count > 1) {
                 BinaryStdOut.write(arr[cur]);
                 cur = next[cur];
+                --count;
             }
             
             BinaryStdOut.write(arr[cur]);
